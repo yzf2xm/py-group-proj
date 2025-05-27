@@ -1,26 +1,26 @@
-- [Setup](#org8f5be98)
-  - [Import packages](#org3bb9904)
-  - [Colour Scheme per Streaming Platform](#org6b553ff)
-- [Load data](#org227d93b)
-- [Prepare data](#org8e852bb)
-  - [Data Cleaning - Movies](#orgc875bc9)
-  - [Data Cleaning - TV](#org85b6c65)
-  - [Streaming Platform Breakdown](#org070827c)
-- [Analysis](#org67627ac)
-  - [Who has the biggest catalog?](#org95d4560)
-  - [Release year breakdown of movies and TV shows in each catalog?](#orge8b340d)
-  - [What are the popular genres in each catalog?](#orga714f80)
-  - [IMDb and Rotten Tomatoes Scoring per platform?](#orgec8a512)
-  - [Age of Audience Suggested?](#orge451e99)
+- [Setup](#orga1405d0)
+  - [Import packages](#org9643947)
+  - [Colour Scheme per Streaming Platform](#org5443a8c)
+- [Data Preparation](#org4e84ac0)
+  - [Load data](#org91e82e9)
+  - [Data Cleaning - Movies](#orgb2b8433)
+  - [Data Cleaning - TV Shows](#orgf839704)
+  - [Streaming Platform Breakdown](#orgdce6bbf)
+- [Analysis](#org8442ccb)
+  - [Who has the biggest catalog?](#orge316e3f)
+  - [Release year breakdown of movies and TV shows in each catalog?](#orgb768007)
+  - [What are the popular genres in each catalog?](#orgac66f7e)
+  - [IMDb and Rotten Tomatoes Scoring per platform?](#orgc28d9c1)
+  - [Age of Audience Suggested?](#org18a9ac3)
 
 
 
-<a id="org8f5be98"></a>
+<a id="orga1405d0"></a>
 
 # Setup
 
 
-<a id="org3bb9904"></a>
+<a id="org9643947"></a>
 
 ## Import packages
 
@@ -32,7 +32,7 @@ import seaborn as sns
 ```
 
 
-<a id="org6b553ff"></a>
+<a id="org5443a8c"></a>
 
 ## Colour Scheme per Streaming Platform
 
@@ -44,9 +44,14 @@ p_col = '#FFB347'  #'#FF9900' # orange - Prime Video
 ```
 
 
-<a id="org227d93b"></a>
+<a id="org4e84ac0"></a>
 
-# Load data
+# Data Preparation
+
+
+<a id="org91e82e9"></a>
+
+## Load data
 
 ```python
 movies = pd.read_csv('data/MoviesOnStreamingPlatforms_updated.csv', index_col=0)
@@ -54,12 +59,7 @@ tv = pd.read_csv('data/tv_shows.csv', index_col=0)
 ```
 
 
-<a id="org8e852bb"></a>
-
-# Prepare data
-
-
-<a id="orgc875bc9"></a>
+<a id="orgb2b8433"></a>
 
 ## Data Cleaning - Movies
 
@@ -71,9 +71,9 @@ movies['Rotten Tomatoes'] = movies['Rotten Tomatoes'].fillna(0)
 ```
 
 
-<a id="org85b6c65"></a>
+<a id="orgf839704"></a>
 
-## Data Cleaning - TV
+## Data Cleaning - TV Shows
 
 ```python
 tv.Age = tv.Age.fillna('Unknown')
@@ -83,7 +83,7 @@ tv['Rotten Tomatoes'] = tv['Rotten Tomatoes'].fillna(0)
 ```
 
 
-<a id="org070827c"></a>
+<a id="orgdce6bbf"></a>
 
 ## Streaming Platform Breakdown
 
@@ -100,12 +100,12 @@ Netflix_tv = tv.loc[(tv['Netflix'] > 0)  ]
 ```
 
 
-<a id="org67627ac"></a>
+<a id="org8442ccb"></a>
 
 # Analysis
 
 
-<a id="org95d4560"></a>
+<a id="orge316e3f"></a>
 
 ## Who has the biggest catalog?
 
@@ -158,7 +158,7 @@ f
     ```
 
 
-<a id="orge8b340d"></a>
+<a id="orgb768007"></a>
 
 ## Release year breakdown of movies and TV shows in each catalog?
 
@@ -213,8 +213,10 @@ plt.savefig(f)
 f
 ```
 
+![img](output/figures/TV-Series-Release-Year.png)
 
-<a id="orga714f80"></a>
+
+<a id="orgac66f7e"></a>
 
 ## What are the popular genres in each catalog?
 
@@ -310,7 +312,7 @@ f
 ![img](output/figures/Movie-Genres-grouped-by-platform.png)
 
 
-<a id="orgec8a512"></a>
+<a id="orgc28d9c1"></a>
 
 ## IMDb and Rotten Tomatoes Scoring per platform?
 
@@ -437,7 +439,7 @@ f
 ![img](output/figures/Top-Ratings.png)
 
 
-<a id="orge451e99"></a>
+<a id="org18a9ac3"></a>
 
 ## Age of Audience Suggested?
 
