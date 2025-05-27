@@ -1,26 +1,26 @@
-- [Setup](#orga1405d0)
-  - [Import packages](#org9643947)
-  - [Colour Scheme per Streaming Platform](#org5443a8c)
-- [Data Preparation](#org4e84ac0)
-  - [Load data](#org91e82e9)
-  - [Data Cleaning - Movies](#orgb2b8433)
-  - [Data Cleaning - TV Shows](#orgf839704)
-  - [Streaming Platform Breakdown](#orgdce6bbf)
-- [Analysis](#org8442ccb)
-  - [Who has the biggest catalog?](#orge316e3f)
-  - [Release year breakdown of movies and TV shows in each catalog?](#orgb768007)
-  - [What are the popular genres in each catalog?](#orgac66f7e)
-  - [IMDb and Rotten Tomatoes Scoring per platform?](#orgc28d9c1)
-  - [Age of Audience Suggested?](#org18a9ac3)
+- [Setup](#orgc7522b1)
+  - [Import packages](#org7842027)
+  - [Colour Scheme per Streaming Platform](#orga730329)
+- [Data Preparation](#org844daba)
+  - [Load data](#orgbc059d2)
+  - [Data Cleaning - Movies](#orgf8c185d)
+  - [Data Cleaning - TV Shows](#orgad7ee1e)
+  - [Streaming Platform Breakdown](#org66a9074)
+- [Analysis](#orgeed2105)
+  - [Who has the biggest catalog?](#orgabd12c4)
+  - [Release year breakdown of movies and TV shows in each catalog?](#org428957c)
+  - [What are the popular genres in each catalog?](#org47b464b)
+  - [IMDb and Rotten Tomatoes Scoring per platform?](#org585ec1c)
+  - [Age of Audience Suggested?](#orgbd43e6c)
 
 
 
-<a id="orga1405d0"></a>
+<a id="orgc7522b1"></a>
 
 # Setup
 
 
-<a id="org9643947"></a>
+<a id="org7842027"></a>
 
 ## Import packages
 
@@ -32,7 +32,7 @@ import seaborn as sns
 ```
 
 
-<a id="org5443a8c"></a>
+<a id="orga730329"></a>
 
 ## Colour Scheme per Streaming Platform
 
@@ -44,12 +44,12 @@ p_col = '#FFB347'  #'#FF9900' # orange - Prime Video
 ```
 
 
-<a id="org4e84ac0"></a>
+<a id="org844daba"></a>
 
 # Data Preparation
 
 
-<a id="org91e82e9"></a>
+<a id="orgbc059d2"></a>
 
 ## Load data
 
@@ -59,7 +59,7 @@ tv = pd.read_csv('data/tv_shows.csv', index_col=0)
 ```
 
 
-<a id="orgb2b8433"></a>
+<a id="orgf8c185d"></a>
 
 ## Data Cleaning - Movies
 
@@ -71,7 +71,7 @@ movies['Rotten Tomatoes'] = movies['Rotten Tomatoes'].fillna(0)
 ```
 
 
-<a id="orgf839704"></a>
+<a id="orgad7ee1e"></a>
 
 ## Data Cleaning - TV Shows
 
@@ -83,7 +83,7 @@ tv['Rotten Tomatoes'] = tv['Rotten Tomatoes'].fillna(0)
 ```
 
 
-<a id="orgdce6bbf"></a>
+<a id="org66a9074"></a>
 
 ## Streaming Platform Breakdown
 
@@ -100,12 +100,12 @@ Netflix_tv = tv.loc[(tv['Netflix'] > 0)  ]
 ```
 
 
-<a id="org8442ccb"></a>
+<a id="orgeed2105"></a>
 
 # Analysis
 
 
-<a id="orge316e3f"></a>
+<a id="orgabd12c4"></a>
 
 ## Who has the biggest catalog?
 
@@ -144,9 +144,7 @@ explode = (0, 0, 0, 0)
 
 donut(121,movies,sizes1,'Movies')
 donut(122,tv,sizes2,'TV Shows')
-#plt.show()
-plt.savefig(f)
-f
+plt.show()
 ```
 
 ![img](output/figures/Count_per_platform_pie.png)
@@ -156,9 +154,23 @@ f
     ```python
     tv.groupby(['Netflix','Hulu','Prime Video','Disney+']).count()
     ```
+    
+    |           | Title | Year | Age  | IMDb | Rotten Tomatoes | type |
+    |--------- |----- |---- |---- |---- |--------------- |---- |
+    | (0 0 0 1) | 156   | 156  | 156  | 156  | 156             | 156  |
+    | (0 0 1 0) | 1889  | 1889 | 1889 | 1889 | 1889            | 1889 |
+    | (0 1 0 0) | 1452  | 1452 | 1452 | 1452 | 1452            | 1452 |
+    | (0 1 0 1) | 18    | 18   | 18   | 18   | 18              | 18   |
+    | (0 1 1 0) | 165   | 165  | 165  | 165  | 165             | 165  |
+    | (1 0 0 0) | 1748  | 1748 | 1748 | 1748 | 1748            | 1748 |
+    | (1 0 0 1) | 5     | 5    | 5    | 5    | 5               | 5    |
+    | (1 0 1 0) | 59    | 59   | 59   | 59   | 59              | 59   |
+    | (1 1 0 0) | 87    | 87   | 87   | 87   | 87              | 87   |
+    | (1 1 0 1) | 1     | 1    | 1    | 1    | 1               | 1    |
+    | (1 1 1 0) | 31    | 31   | 31   | 31   | 31              | 31   |
 
 
-<a id="orgb768007"></a>
+<a id="org428957c"></a>
 
 ## Release year breakdown of movies and TV shows in each catalog?
 
@@ -185,8 +197,7 @@ kde(421,movies,'Netflix',0)
 kde(423,movies,'Hulu',1)
 kde(425,movies,'Prime Video',2)
 kde(427,movies,'Disney+',3)
-plt.savefig(f)
-f
+plt.show()
 ```
 
 ![img](output/figures/Release-year-breakdown-of-movies-and-TV-shows.png)
@@ -209,14 +220,13 @@ kdetv(411,tv,'Netflix',0);
 kdetv(412,tv,'Hulu',1);
 kdetv(413,tv,'Prime Video',2);
 kdetv(414,tv,'Disney+',3);
-plt.savefig(f)
-f
+plt.show()
 ```
 
 ![img](output/figures/TV-Series-Release-Year.png)
 
 
-<a id="orgac66f7e"></a>
+<a id="org47b464b"></a>
 
 ## What are the popular genres in each catalog?
 
@@ -254,8 +264,7 @@ movie_genres = mGenres.sum().sort_values(ascending=False)
 #plotting into a bar plot
 plt.figure(figsize=(12,8))
 sns.barplot(x=movie_genres.values, y=movie_genres.index)
-plt.savefig(f)
-f
+plt.show()
 ```
 
 ![img](output/figures/Movie-Genres.png)
@@ -304,15 +313,13 @@ axes[1,0].axvline(20, color='grey', linestyle='--')
 sns.barplot(y=disney_genres_list.index, x=disney_genres_list.values, ax=axes[1,1], palette='winter');
 plt.tight_layout();
 axes[1,1].axvline(20, color='grey', linestyle='--')
-# plt.show();
-plt.savefig(f)
-f
+plt.show();
 ```
 
 ![img](output/figures/Movie-Genres-grouped-by-platform.png)
 
 
-<a id="orgc28d9c1"></a>
+<a id="org585ec1c"></a>
 
 ## IMDb and Rotten Tomatoes Scoring per platform?
 
@@ -370,9 +377,7 @@ sns.histplot(data=Disney_tvRotten['Rotten Tomatoes'], color=d_col, ax=ax[1,1]);
 
 #Setting the legend
 plt.legend(['Prime Video', 'Netflix', 'Hulu', 'Disney+'], bbox_to_anchor=(1,1));
-# plt.show();
-plt.savefig(f)
-f
+plt.show();
 ```
 
 ![img](output/figures/Ratings-Summary.png)
@@ -431,15 +436,13 @@ sns.histplot(data=Disney_tvRotten['Rotten Tomatoes'], color=d_col, ax=ax[1,1]);
 
 #Setting the legend
 plt.legend(['Prime Video', 'Netflix', 'Hulu', 'Disney+'], bbox_to_anchor=(1,1))
-# plt.show();
-plt.savefig(f)
-f
+plt.show();
 ```
 
 ![img](output/figures/Top-Ratings.png)
 
 
-<a id="org18a9ac3"></a>
+<a id="orgbd43e6c"></a>
 
 ## Age of Audience Suggested?
 
@@ -469,10 +472,18 @@ net_tv = [171,300,3,398,359]
 prim_tv = [192,224,1,209,182]
 dis_tv = [81,66,0,3,0]
 
-mov_age = pd.DataFrame([['G',55,130,406,277],['PG',109,323,916,179],['PG-13',119,383,819,40],['R',17,89,226,1],['NC-17',290,752,2612,3]],
+mov_age = pd.DataFrame([['G',55,130,406,277],
+                        ['PG',109,323,916,179],
+                        ['PG-13',119,383,819,40],
+                        ['R',17,89,226,1],
+                        ['NC-17',290,752,2612,3]],
                       columns=['Rating','Hulu','Netflix','Prime Video','Disney+'])
 
-tv_age = pd.DataFrame([['G',159,171,192,81],['PG',365,300,224,66],['PG-13',0,3,1,0],['R',514,398,209,3],['NC-17',239,359,182,0]],
+tv_age = pd.DataFrame([['G',159,171,192,81],
+                       ['PG',365,300,224,66],
+                       ['PG-13',0,3,1,0],
+                       ['R',514,398,209,3],
+                       ['NC-17',239,359,182,0]],
                       columns=['Rating','Hulu','Netflix','Prime Video','Disney+'])
 
 colors = [h_col, n_col, p_col, d_col]
@@ -480,14 +491,13 @@ colors = [h_col, n_col, p_col, d_col]
 fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10,6));
 mov_age.plot(x='Rating', ax=axes[0], kind='bar', title='Movies', color=colors);
 tv_age.plot(x='Rating', ax=axes[1], kind='bar', title='TV', color=colors, legend=False);
-fig.suptitle('Age Classification *', fontsize=16);
+fig.suptitle('Age Classification', fontsize=16);
 axes[0].set_xlabel('');
 axes[1].set_xlabel('');
 
 # annotations
-fig.text(0.11, -.12, '* G – General Audiences - All ages admitted.\n  PG – Parental Guidance Suggested - Some material may not be suitable for children. (7+)\n  PG-13 – Parents Strongly Cautioned - Some material may be inappropriate for children under 13. (13+)\n  R – Restricted - Under 17 requires accompanying parent or adult guardian. (16+)\n  NC-17 – Adults Only - No One 17 and Under Admitted. (18+)', ha='left');
-fig.savefig(f)
-f
+# fig.text(0.11, -.12, '* G – General Audiences - All ages admitted.\n  PG – Parental Guidance Suggested - Some material may not be suitable for children. (7+)\n  PG-13 – Parents Strongly Cautioned - Some material may be inappropriate for children under 13. (13+)\n  R – Restricted - Under 17 requires accompanying parent or adult guardian. (16+)\n  NC-17 – Adults Only - No One 17 and Under Admitted. (18+)', ha='left');
+fig.show()
 ```
 
 ![img](output/figures/age-classification.png)
