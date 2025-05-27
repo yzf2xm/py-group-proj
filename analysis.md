@@ -1,20 +1,28 @@
-- [Import packages](#orge56c3f4)
-- [Load data](#org6ad5267)
-  - [Check Data of MOVIES](#orgd16f9bd)
-    - [Check Data of TV](#org61e361f)
-  - [Streaming Platform Breakdown](#org473ef41)
-- [Settings](#org902a2a8)
-- [Who has the biggest catalog?](#org2c9af16)
-- [Release year breakdown of movies and TV shows in each catalog?](#org8a179fd)
-- [What are the popular genres in each catalog?](#org323d966)
-- [IMDb and Rotten Tomatoes Scoring per platform?](#org327263e)
-- [Age of Audience Suggested?](#orgadb1e75)
+- [Setup](#org8f5be98)
+  - [Import packages](#org3bb9904)
+  - [Colour Scheme per Streaming Platform](#org6b553ff)
+- [Load data](#org227d93b)
+- [Prepare data](#org8e852bb)
+  - [Data Cleaning - Movies](#orgc875bc9)
+  - [Data Cleaning - TV](#org85b6c65)
+  - [Streaming Platform Breakdown](#org070827c)
+- [Analysis](#org67627ac)
+  - [Who has the biggest catalog?](#org95d4560)
+  - [Release year breakdown of movies and TV shows in each catalog?](#orge8b340d)
+  - [What are the popular genres in each catalog?](#orga714f80)
+  - [IMDb and Rotten Tomatoes Scoring per platform?](#orgec8a512)
+  - [Age of Audience Suggested?](#orge451e99)
 
 
 
-<a id="orge56c3f4"></a>
+<a id="org8f5be98"></a>
 
-# Import packages
+# Setup
+
+
+<a id="org3bb9904"></a>
+
+## Import packages
 
 ```python
 import pandas as pd
@@ -24,60 +32,58 @@ import seaborn as sns
 ```
 
 
-<a id="org6ad5267"></a>
+<a id="org6b553ff"></a>
+
+## Colour Scheme per Streaming Platform
+
+```python
+n_col = '#ff6961'  #'#e50914' # red - Netflix
+h_col = '#77DD77'  #'#1ce783' # green - Hulu
+d_col = '#26abff'  #'#113CCF' # blue - Disney+
+p_col = '#FFB347'  #'#FF9900' # orange - Prime Video
+```
+
+
+<a id="org227d93b"></a>
 
 # Load data
 
 ```python
-movies = pd.read_csv(
-    'data/MoviesOnStreamingPlatforms_updated.csv',
-    index_col=0
-)
+movies = pd.read_csv('data/MoviesOnStreamingPlatforms_updated.csv', index_col=0)
 tv = pd.read_csv('data/tv_shows.csv', index_col=0)
 ```
 
 
-<a id="orgd16f9bd"></a>
+<a id="org8e852bb"></a>
 
-## Check Data of MOVIES
-
-```python
-movies.head()
-movies.describe()
-movies.isnull().sum()
-```
-
--   Data Cleaning
-    
-    ```python
-    movies.Age = movies.Age.fillna('Unknown')
-    movies.IMDb = movies.IMDb.fillna(0)
-    movies['Rotten Tomatoes'] = movies['Rotten Tomatoes'].str.rstrip('%').astype('float') # get rid of the % symbol
-    movies['Rotten Tomatoes'] = movies['Rotten Tomatoes'].fillna(0)
-    ```
+# Prepare data
 
 
-<a id="org61e361f"></a>
+<a id="orgc875bc9"></a>
 
-### Check Data of TV
+## Data Cleaning - Movies
 
 ```python
-tv.head()
-tv.describe()
-tv.isnull().sum()
+movies.Age = movies.Age.fillna('Unknown')
+movies.IMDb = movies.IMDb.fillna(0)
+movies['Rotten Tomatoes'] = movies['Rotten Tomatoes'].str.rstrip('%').astype('float') # get rid of the % symbol
+movies['Rotten Tomatoes'] = movies['Rotten Tomatoes'].fillna(0)
 ```
 
--   Data Cleaning
-    
-    ```python
-    tv.Age = tv.Age.fillna('Unknown')
-    tv.IMDb = tv.IMDb.fillna(0)
-    tv['Rotten Tomatoes'] = tv['Rotten Tomatoes'].str.rstrip('%').astype('float') # get rid of the % symbol
-    tv['Rotten Tomatoes'] = tv['Rotten Tomatoes'].fillna(0)
-    ```
+
+<a id="org85b6c65"></a>
+
+## Data Cleaning - TV
+
+```python
+tv.Age = tv.Age.fillna('Unknown')
+tv.IMDb = tv.IMDb.fillna(0)
+tv['Rotten Tomatoes'] = tv['Rotten Tomatoes'].str.rstrip('%').astype('float') # get rid of the % symbol
+tv['Rotten Tomatoes'] = tv['Rotten Tomatoes'].fillna(0)
+```
 
 
-<a id="org473ef41"></a>
+<a id="org070827c"></a>
 
 ## Streaming Platform Breakdown
 
@@ -94,23 +100,14 @@ Netflix_tv = tv.loc[(tv['Netflix'] > 0)  ]
 ```
 
 
-<a id="org902a2a8"></a>
+<a id="org67627ac"></a>
 
-# Settings
-
-Colour Scheme per Streaming Platform
-
-```python
-n_col = '#ff6961'  #'#e50914' # red
-h_col = '#77DD77'  #'#1ce783' # green
-d_col = '#26abff'  #'#113CCF' # blue
-p_col = '#FFB347'  #'#FF9900' # orange
-```
+# Analysis
 
 
-<a id="org2c9af16"></a>
+<a id="org95d4560"></a>
 
-# Who has the biggest catalog?
+## Who has the biggest catalog?
 
 ```python
 def donut(i,df,sizes,title):
@@ -126,30 +123,44 @@ def donut(i,df,sizes,title):
     plt.axis('equal')
 ```
 
+```python
+def val_sum(df,c):
+    return df[c].sum(axis=0)
+
+val_counts = []
+dfs = [movies,tv]
+cols = ['Netflix','Hulu','Prime Video','Disney+']
+
+for x in dfs:
+    for y in cols:
+        val_counts.append(val_sum(x,y))
+
+fig = plt.subplots(figsize=(16, 8))
+labels = 'Netflix', 'Hulu','Prime Video','Disney+'
+sizes1 = [val_counts[0], val_counts[1],val_counts[2],val_counts[3]]
+sizes2 = [val_counts[4], val_counts[5],val_counts[6],val_counts[7]]
+colors = [n_col, h_col, p_col, d_col]
+explode = (0, 0, 0, 0)
+
+donut(121,movies,sizes1,'Movies')
+donut(122,tv,sizes2,'TV Shows')
+#plt.show()
+plt.savefig(f)
+f
+```
+
 ![img](output/figures/Count_per_platform_pie.png)
 
--   Can we evaluate the &rsquo;unique&rsquo; movies/tv shows to each platform?
+-   **Can we evaluate the &rsquo;unique&rsquo; movies/tv shows to each platform?**
     
-    ```
-                                      Title  Year   Age  IMDb  Rotten Tomatoes  type
-    Netflix Hulu Prime Video Disney+                                                
-    0       0    0           1          156   156   156   156              156   156
-                 1           0         1889  1889  1889  1889             1889  1889
-            1    0           0         1452  1452  1452  1452             1452  1452
-                             1           18    18    18    18               18    18
-                 1           0          165   165   165   165              165   165
-    1       0    0           0         1748  1748  1748  1748             1748  1748
-                             1            5     5     5     5                5     5
-                 1           0           59    59    59    59               59    59
-            1    0           0           87    87    87    87               87    87
-                             1            1     1     1     1                1     1
-                 1           0           31    31    31    31               31    31
+    ```python
+    tv.groupby(['Netflix','Hulu','Prime Video','Disney+']).count()
     ```
 
 
-<a id="org8a179fd"></a>
+<a id="orge8b340d"></a>
 
-# Release year breakdown of movies and TV shows in each catalog?
+## Release year breakdown of movies and TV shows in each catalog?
 
 ```python
 def kde(i,dataframe,platform,c):
@@ -168,6 +179,16 @@ def kde(i,dataframe,platform,c):
     plt.legend([platform], fontsize = 15, bbox_to_anchor=(1.02,.9), loc="upper left");
 ```
 
+```python
+plt.figure(figsize = (16, 8))
+kde(421,movies,'Netflix',0)
+kde(423,movies,'Hulu',1)
+kde(425,movies,'Prime Video',2)
+kde(427,movies,'Disney+',3)
+plt.savefig(f)
+f
+```
+
 ![img](output/figures/Release-year-breakdown-of-movies-and-TV-shows.png)
 
 ```python
@@ -181,12 +202,21 @@ def kdetv(i,dataframe,platform,c):
     plt.legend([platform], fontsize = 15, bbox_to_anchor=(1.02,.9), loc="upper left");
 ```
 
-![img](output/figures/TV-Series-Release-Year.png)
+```python
+plt.figure(figsize = (8, 8));
+
+kdetv(411,tv,'Netflix',0);
+kdetv(412,tv,'Hulu',1);
+kdetv(413,tv,'Prime Video',2);
+kdetv(414,tv,'Disney+',3);
+plt.savefig(f)
+f
+```
 
 
-<a id="org323d966"></a>
+<a id="orga714f80"></a>
 
-# What are the popular genres in each catalog?
+## What are the popular genres in each catalog?
 
 ```python
 #creating helper function that receives a column and returns a new dataframe
@@ -216,6 +246,16 @@ Prime_mG = Prime_movies.join(mGenres)
 Disney_mG = Disney_movies.join(mGenres)
 ```
 
+```python
+#performing a sum operation of all True values
+movie_genres = mGenres.sum().sort_values(ascending=False)
+#plotting into a bar plot
+plt.figure(figsize=(12,8))
+sns.barplot(x=movie_genres.values, y=movie_genres.index)
+plt.savefig(f)
+f
+```
+
 ![img](output/figures/Movie-Genres.png)
 
 ```python
@@ -236,12 +276,43 @@ primevideo_genres_list = Prime_mG.sum().sort_values(ascending=False).head(10)/su
 disney_genres_list = Disney_mG.sum().sort_values(ascending=False).head(10)/sum(Disney_mG.sum())*100
 ```
 
+```python
+#creating subplots to show each data into a different ax
+fix, axes = plt.subplots(2,2, figsize=(12,8));
+
+#setting titles
+axes[0,0].set_title('Hulu');
+axes[0,0].set_xlim(0,22.5);
+axes[0,1].set_title('Netflix');
+axes[0,1].set_xlim(0,22.5);
+axes[1,0].set_title('Prime Video');
+axes[1,0].set_xlim(0,22.5);
+axes[1,0].set_xlabel('Percentage of Catalog (%)');
+axes[1,1].set_title('Disney+');
+axes[1,1].set_xlim(0,22.5);
+axes[1,1].set_xlabel('Percentage of Catalog (%)');
+fix.suptitle('Movie Genres', fontsize=16)
+#plotting the four barplots using seaborn
+sns.barplot(y=hulu_genres_list.index, x=hulu_genres_list.values, ax=axes[0,0],palette='summer');
+axes[0,0].axvline(20, color='grey', linestyle='--')
+sns.barplot(y=netflix_genres_list.index, x=netflix_genres_list.values, ax=axes[0,1], palette='Reds_r');
+axes[0,1].axvline(20, color='grey', linestyle='--')
+sns.barplot(y=primevideo_genres_list.index, x=primevideo_genres_list.values, ax=axes[1,0], palette='Wistia_r');
+axes[1,0].axvline(20, color='grey', linestyle='--')
+sns.barplot(y=disney_genres_list.index, x=disney_genres_list.values, ax=axes[1,1], palette='winter');
+plt.tight_layout();
+axes[1,1].axvline(20, color='grey', linestyle='--')
+# plt.show();
+plt.savefig(f)
+f
+```
+
 ![img](output/figures/Movie-Genres-grouped-by-platform.png)
 
 
-<a id="org327263e"></a>
+<a id="orgec8a512"></a>
 
-# IMDb and Rotten Tomatoes Scoring per platform?
+## IMDb and Rotten Tomatoes Scoring per platform?
 
 ```python
 Hulu_mIMDb = Hulu_movies.loc[Hulu_movies['IMDb']>0]
@@ -263,6 +334,43 @@ Hulu_tvRotten = Hulu_tv.loc[Hulu_tv['Rotten Tomatoes']>0]
 Netflix_tvRotten = Netflix_tv.loc[Netflix_tv['Rotten Tomatoes']>0]
 Prime_tvRotten = Prime_tv.loc[Prime_tv['Rotten Tomatoes']>0]
 Disney_tvRotten = Disney_tv.loc[Disney_tv['Rotten Tomatoes']>0]
+```
+
+```python
+#Defining plot size and title
+fig,ax = plt.subplots(2,2, figsize=(12,10))
+
+ax[0,0].set_title('IMDb Movie Ratings');
+ax[0,1].set_title('IMDb TV Ratings');
+ax[1,0].set_title('Rotten Tomatoes Movie Ratings');
+ax[1,1].set_title('Rotten Tomatoes TV Ratings');
+
+#Plotting the information from each dataset into a KDE plot
+sns.histplot(data=Prime_mIMDb['IMDb'], color=p_col, ax=ax[0,0]);
+sns.histplot(data=Netflix_mIMDb['IMDb'], color=n_col,  ax=ax[0,0]);
+sns.histplot(data=Hulu_mIMDb['IMDb'], color=h_col,  ax=ax[0,0]);
+sns.histplot(data=Disney_mIMDb['IMDb'], color=d_col, ax=ax[0,0]);
+
+sns.histplot(data=Prime_mRotten['Rotten Tomatoes'], color=p_col, ax=ax[1,0]);
+sns.histplot(data=Netflix_mRotten['Rotten Tomatoes'], color=n_col,  ax=ax[1,0]);
+sns.histplot(data=Hulu_mRotten['Rotten Tomatoes'], color=h_col,  ax=ax[1,0]);
+sns.histplot(data=Disney_mRotten['Rotten Tomatoes'], color=d_col, ax=ax[1,0]);
+
+sns.histplot(data=Prime_tvIMDb['IMDb'], color=p_col, legend=True, ax=ax[0,1]);
+sns.histplot(data=Netflix_tvIMDb['IMDb'], color=n_col,  legend=True, ax=ax[0,1]);
+sns.histplot(data=Hulu_tvIMDb['IMDb'], color=h_col,  legend=True, ax=ax[0,1]);
+sns.histplot(data=Disney_tvIMDb['IMDb'], color=d_col, legend=True, ax=ax[0,1]);
+
+sns.histplot(data=Prime_tvRotten['Rotten Tomatoes'], color=p_col, ax=ax[1,1]);
+sns.histplot(data=Netflix_tvRotten['Rotten Tomatoes'], color=n_col, ax=ax[1,1]);
+sns.histplot(data=Hulu_tvRotten['Rotten Tomatoes'], color=h_col, ax=ax[1,1]);
+sns.histplot(data=Disney_tvRotten['Rotten Tomatoes'], color=d_col, ax=ax[1,1]);
+
+#Setting the legend
+plt.legend(['Prime Video', 'Netflix', 'Hulu', 'Disney+'], bbox_to_anchor=(1,1));
+# plt.show();
+plt.savefig(f)
+f
 ```
 
 ![img](output/figures/Ratings-Summary.png)
@@ -289,12 +397,49 @@ Prime_tvRotten = Prime_tv.loc[Prime_tv['Rotten Tomatoes']>=80]
 Disney_tvRotten = Disney_tv.loc[Disney_tv['Rotten Tomatoes']>=80]
 ```
 
+```python
+#Defining plot size and title
+fig,ax = plt.subplots(2,2, figsize=(12,10))
+
+ax[0,0].set_title('Best IMDb Movie Ratings');
+ax[0,1].set_title('Best IMDb TV Ratings');
+ax[1,0].set_title('Best Rotten Tomatoes Movie Ratings');
+ax[1,1].set_title('Best Rotten Tomatoes TV Ratings');
+
+#Plotting the information from each dataset into a KDE plot
+sns.histplot(data=Prime_mIMDb['IMDb'], color=p_col, ax=ax[0,0]);
+sns.histplot(data=Netflix_mIMDb['IMDb'], color=n_col,  ax=ax[0,0]);
+sns.histplot(data=Hulu_mIMDb['IMDb'], color=h_col,  ax=ax[0,0]);
+sns.histplot(data=Disney_mIMDb['IMDb'], color=d_col, ax=ax[0,0]);
+
+sns.histplot(data=Prime_mRotten['Rotten Tomatoes'], color=p_col, ax=ax[1,0]);
+sns.histplot(data=Netflix_mRotten['Rotten Tomatoes'], color=n_col,  ax=ax[1,0]);
+sns.histplot(data=Hulu_mRotten['Rotten Tomatoes'], color=h_col,  ax=ax[1,0]);
+sns.histplot(data=Disney_mRotten['Rotten Tomatoes'], color=d_col, ax=ax[1,0]);
+
+sns.histplot(data=Prime_tvIMDb['IMDb'], color=p_col, legend=True, ax=ax[0,1]);
+sns.histplot(data=Netflix_tvIMDb['IMDb'], color=n_col,  legend=True, ax=ax[0,1]);
+sns.histplot(data=Hulu_tvIMDb['IMDb'], color=h_col,  legend=True, ax=ax[0,1]);
+sns.histplot(data=Disney_tvIMDb['IMDb'], color=d_col, legend=True, ax=ax[0,1]);
+
+sns.histplot(data=Prime_tvRotten['Rotten Tomatoes'], color=p_col, ax=ax[1,1]);
+sns.histplot(data=Netflix_tvRotten['Rotten Tomatoes'], color=n_col, ax=ax[1,1]);
+sns.histplot(data=Hulu_tvRotten['Rotten Tomatoes'], color=h_col, ax=ax[1,1]);
+sns.histplot(data=Disney_tvRotten['Rotten Tomatoes'], color=d_col, ax=ax[1,1]);
+
+#Setting the legend
+plt.legend(['Prime Video', 'Netflix', 'Hulu', 'Disney+'], bbox_to_anchor=(1,1))
+# plt.show();
+plt.savefig(f)
+f
+```
+
 ![img](output/figures/Top-Ratings.png)
 
 
-<a id="orgadb1e75"></a>
+<a id="orge451e99"></a>
 
-# Age of Audience Suggested?
+## Age of Audience Suggested?
 
 ```python
 hulu_mages = Hulu_movies.Age.value_counts().drop('Unknown')
@@ -306,6 +451,41 @@ hulu_tvages = Hulu_tv.Age.value_counts().drop('Unknown')
 netflix_tvages = Netflix_tv.Age.value_counts().drop('Unknown')
 primevideo_tvages = Prime_tv.Age.value_counts().drop('Unknown')
 disney_tvages = Disney_tv.Age.value_counts().drop('Unknown')
+```
+
+```python
+x = ['G','PG','PG-13','R','NC-17']
+
+#is this the best code? NO. But it will work in a pinch for this one purpose **only**...
+hulu_mov = [55,109,119,17,290]
+net_mov = [130,323,383,89,752]
+prim_mov = [406,916,819,226,2612]
+dis_mov = [277,179,40,1,3]
+
+hulu_tv = [159,365,0,514,239]
+net_tv = [171,300,3,398,359]
+prim_tv = [192,224,1,209,182]
+dis_tv = [81,66,0,3,0]
+
+mov_age = pd.DataFrame([['G',55,130,406,277],['PG',109,323,916,179],['PG-13',119,383,819,40],['R',17,89,226,1],['NC-17',290,752,2612,3]],
+                      columns=['Rating','Hulu','Netflix','Prime Video','Disney+'])
+
+tv_age = pd.DataFrame([['G',159,171,192,81],['PG',365,300,224,66],['PG-13',0,3,1,0],['R',514,398,209,3],['NC-17',239,359,182,0]],
+                      columns=['Rating','Hulu','Netflix','Prime Video','Disney+'])
+
+colors = [h_col, n_col, p_col, d_col]
+
+fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10,6));
+mov_age.plot(x='Rating', ax=axes[0], kind='bar', title='Movies', color=colors);
+tv_age.plot(x='Rating', ax=axes[1], kind='bar', title='TV', color=colors, legend=False);
+fig.suptitle('Age Classification *', fontsize=16);
+axes[0].set_xlabel('');
+axes[1].set_xlabel('');
+
+# annotations
+fig.text(0.11, -.12, '* G – General Audiences - All ages admitted.\n  PG – Parental Guidance Suggested - Some material may not be suitable for children. (7+)\n  PG-13 – Parents Strongly Cautioned - Some material may be inappropriate for children under 13. (13+)\n  R – Restricted - Under 17 requires accompanying parent or adult guardian. (16+)\n  NC-17 – Adults Only - No One 17 and Under Admitted. (18+)', ha='left');
+fig.savefig(f)
+f
 ```
 
 ![img](output/figures/age-classification.png)
