@@ -1,26 +1,29 @@
-- [Setup](#orgc7522b1)
-  - [Import packages](#org7842027)
-  - [Colour Scheme per Streaming Platform](#orga730329)
-- [Data Preparation](#org844daba)
-  - [Load data](#orgbc059d2)
-  - [Data Cleaning - Movies](#orgf8c185d)
-  - [Data Cleaning - TV Shows](#orgad7ee1e)
-  - [Streaming Platform Breakdown](#org66a9074)
-- [Analysis](#orgeed2105)
-  - [Who has the biggest catalog?](#orgabd12c4)
-  - [Release year breakdown of movies and TV shows in each catalog?](#org428957c)
-  - [What are the popular genres in each catalog?](#org47b464b)
-  - [IMDb and Rotten Tomatoes Scoring per platform?](#org585ec1c)
-  - [Age of Audience Suggested?](#orgbd43e6c)
+- [Setup](#org3488abf)
+  - [Import packages](#org1a1a3d8)
+  - [Colour Scheme per Streaming Platform](#orgdddba60)
+- [Data Preparation](#orge8ac959)
+  - [Load data](#org82aeb64)
+  - [Data Cleaning - Movies](#org461ed29)
+  - [Data Cleaning - TV Shows](#org99d3e45)
+  - [Streaming Platform Breakdown](#orgb836d85)
+- [Analysis](#org91be036)
+  - [Who has the biggest catalog?](#orgd6568d0)
+  - [Release year breakdown of movies and TV shows in each catalog?](#org311c9c3)
+  - [What are the popular genres in each catalog?](#orgf93ed97)
+  - [IMDb and Rotten Tomatoes Scoring per platform?](#orgeb23d5c)
+    - [Top Rated Movies and TV shows](#orgc79148d)
+    - [Who is the platform with the most highly rated shows?](#org6bb09c4)
+    - [Best tv-shows on offer for each streaming platform according to IMDb](#org576f8a6)
+  - [Age of Audience Suggested?](#orgacde503)
 
 
 
-<a id="orgc7522b1"></a>
+<a id="org3488abf"></a>
 
 # Setup
 
 
-<a id="org7842027"></a>
+<a id="org1a1a3d8"></a>
 
 ## Import packages
 
@@ -32,7 +35,7 @@ import seaborn as sns
 ```
 
 
-<a id="orga730329"></a>
+<a id="orgdddba60"></a>
 
 ## Colour Scheme per Streaming Platform
 
@@ -44,12 +47,12 @@ p_col = '#FFB347'  #'#FF9900' # orange - Prime Video
 ```
 
 
-<a id="org844daba"></a>
+<a id="orge8ac959"></a>
 
 # Data Preparation
 
 
-<a id="orgbc059d2"></a>
+<a id="org82aeb64"></a>
 
 ## Load data
 
@@ -59,7 +62,7 @@ tv = pd.read_csv('data/tv_shows.csv', index_col=0)
 ```
 
 
-<a id="orgf8c185d"></a>
+<a id="org461ed29"></a>
 
 ## Data Cleaning - Movies
 
@@ -71,7 +74,7 @@ movies['Rotten Tomatoes'] = movies['Rotten Tomatoes'].fillna(0)
 ```
 
 
-<a id="orgad7ee1e"></a>
+<a id="org99d3e45"></a>
 
 ## Data Cleaning - TV Shows
 
@@ -83,7 +86,7 @@ tv['Rotten Tomatoes'] = tv['Rotten Tomatoes'].fillna(0)
 ```
 
 
-<a id="org66a9074"></a>
+<a id="orgb836d85"></a>
 
 ## Streaming Platform Breakdown
 
@@ -100,12 +103,12 @@ Netflix_tv = tv.loc[(tv['Netflix'] > 0)  ]
 ```
 
 
-<a id="orgeed2105"></a>
+<a id="org91be036"></a>
 
 # Analysis
 
 
-<a id="orgabd12c4"></a>
+<a id="orgd6568d0"></a>
 
 ## Who has the biggest catalog?
 
@@ -170,7 +173,7 @@ plt.show()
     | (1 1 1 0) | 31    | 31   | 31   | 31   | 31              | 31   |
 
 
-<a id="org428957c"></a>
+<a id="org311c9c3"></a>
 
 ## Release year breakdown of movies and TV shows in each catalog?
 
@@ -226,7 +229,7 @@ plt.show()
 ![img](output/figures/TV-Series-Release-Year.png)
 
 
-<a id="org47b464b"></a>
+<a id="orgf93ed97"></a>
 
 ## What are the popular genres in each catalog?
 
@@ -319,7 +322,7 @@ plt.show();
 ![img](output/figures/Movie-Genres-grouped-by-platform.png)
 
 
-<a id="org585ec1c"></a>
+<a id="orgeb23d5c"></a>
 
 ## IMDb and Rotten Tomatoes Scoring per platform?
 
@@ -382,6 +385,11 @@ plt.show();
 
 ![img](output/figures/Ratings-Summary.png)
 
+
+<a id="orgc79148d"></a>
+
+### Top Rated Movies and TV shows
+
 ```python
 Hulu_mIMDb = Hulu_movies.loc[Hulu_movies['IMDb']>=8]
 Netflix_mIMDb = Netflix_movies.loc[Netflix_movies['IMDb']>=8]
@@ -442,7 +450,107 @@ plt.show();
 ![img](output/figures/Top-Ratings.png)
 
 
-<a id="orgbd43e6c"></a>
+<a id="org6bb09c4"></a>
+
+### Who is the platform with the most highly rated shows?
+
+```python
+top_netflix_shows = Netflix_tv.loc[Netflix_tv['IMDb']>=8]
+top_hulu_shows = Hulu_tv.loc[Hulu_tv['IMDb'] > 8]
+top_prime_shows = Prime_tv.loc[Prime_tv['IMDb'] > 8]
+top_disney_shows = Disney_tv.loc[Disney_tv['IMDb'] > 8]
+
+top_rated_shows = pd.DataFrame({
+    'Platforms' : ['Netflix',
+                   'Hulu',
+                   'Prime Video',
+                   'Disney'],
+    'Total highly rated shows' : [top_netflix_shows.sum(),
+                                  top_hulu_shows.sum(),
+                                  top_prime_shows.sum(),
+                                  top_disney_shows.sum()]})
+top_rated_shows = top_rated_shows.set_index('Platforms')
+```
+
+```python
+sns.barplot(x = top_rated_shows['Platforms'],
+            y = top_rated_shows['Total highly rated shows'],
+            data = top_rated_shows,
+           palette = 'bright')
+
+plt.xlabel('Platforms')
+plt.ylabel('Total shows with 8+ Ratings')
+plt.title('Platforms with Highly Rated Shows')
+plt.show()
+```
+
+
+<a id="org576f8a6"></a>
+
+### Best tv-shows on offer for each streaming platform according to IMDb
+
+```python
+netflix_top_10 = Netflix_tv.sort_values(by='IMDb', ascending = False).head(10)
+
+plt.figure(figsize=(8,4))
+sns.barplot(x='IMDb', y='Title', data=netflix_top_10, palette='bright')
+
+plt.xlabel('IMDb Score')
+plt.ylabel('TV Show')
+plt.title('Highest Rated Netflix Shows')
+
+plt.show()
+```
+
+![img](output/figures/nextflix-best-tv-shows.png)
+
+```python
+hulu_top_10 = Hulu_tv.sort_values(by='IMDb', ascending = False).head(10)
+
+plt.figure(figsize=(8,4))
+sns.barplot(x='IMDb', y='Title', data=hulu_top_10, palette='bright')
+
+plt.xlabel('IMDb Score')
+plt.ylabel('TV Show')
+plt.title('Highest Rated Hulu Shows')
+
+plt.show()
+```
+
+![img](output/figures/hulu-best-tv-shows.png)
+
+```python
+prime_top_10 = Prime_tv.sort_values(by='IMDb', ascending = False).head(10)
+
+plt.figure(figsize=(8,4))
+sns.barplot(x='IMDb', y='Title', data=prime_top_10, palette='bright')
+
+plt.xlabel('IMDb Score')
+plt.ylabel('TV Show')
+plt.title('Highest Rated Prime Shows')
+
+plt.show()
+```
+
+![img](output/figures/prime-best-tv-shows.png)
+
+```python
+disney_top_10 = Disney_tv.sort_values(by='IMDb', ascending = False).head(10)
+
+plt.figure(figsize=(8,4))
+sns.barplot(x='IMDb', y='Title', data=disney_top_10, palette='bright')
+
+plt.xlabel('IMDb Score')
+plt.ylabel('TV Show')
+plt.title('Highest Rated Disney+ Shows')
+
+plt.show()
+```
+
+![img](output/figures/disney-best-tv-shows.png)
+
+
+<a id="orgacde503"></a>
 
 ## Age of Audience Suggested?
 
